@@ -1,0 +1,18 @@
+# Compiled files
+*.elc
+
+# Package directories
+elpa/
+eln-cache/
+
+# Auto-generated
+auto-save-list/
+tramp
+.#*
+\#*\#
+
+# Custom vars (machine-local)
+custom.el
+
+# Backup files
+*~
