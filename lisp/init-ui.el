@@ -104,6 +104,26 @@
   (doom-modeline-position-line-format '("L%l"))  ; just line number, no column
   (doom-modeline-position-column-line-format '("L%l C%c")))
 
+;;; Dashboard
+
+(use-package dashboard
+  :ensure t
+  :custom
+  (dashboard-banner-logo-title "")
+  (dashboard-startup-banner 'logo)
+  (dashboard-center-content t)
+  (dashboard-vertically-center-content t)
+  (dashboard-projects-backend 'projectile)
+  (dashboard-items '((recents   . 8)
+                     (projects  . 5)
+                     (bookmarks . 5)))
+  (dashboard-display-icons-p t)
+  (dashboard-icon-type 'nerd-icons)
+  (dashboard-set-heading-icons t)
+  (dashboard-set-file-icons t)
+  :config
+  (dashboard-setup-startup-hook))
+
 ;;; Font
 (let ((font (if (member "Source Code Pro" (font-family-list))
                 "Source Code Pro"
