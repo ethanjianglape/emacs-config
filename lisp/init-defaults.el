@@ -14,6 +14,9 @@
 (recentf-mode 1)
 (save-place-mode 1)
 
+;;; Native compilation — suppress the async log buffer
+(setq native-comp-async-report-warnings-errors 'silent)
+
 ;;; Interaction
 (setq use-short-answers t              ; y/n instead of yes/no
       confirm-kill-emacs 'yes-or-no-p)

@@ -4,12 +4,23 @@
 # Package directories
 elpa/
 eln-cache/
+elpaca/
+
+# Tree-sitter grammars (platform-specific binaries, auto-downloaded)
+tree-sitter/
 
 # Auto-generated
 auto-save-list/
 tramp
 .#*
 \#*\#
+
+# Machine-local state
+.cache/
+transient/
+places
+recentf
+projectile-bookmarks.eld
 
 # Custom vars (machine-local)
 custom.el
