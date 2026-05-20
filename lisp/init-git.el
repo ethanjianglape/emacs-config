@@ -1,12 +1,15 @@
 ;;; init-git.el --- Git integration -*- lexical-binding: t -*-
 
-;; Emacs ships an older transient; install a fresh one before magit loads.
+;; Emacs ships older versions of these magit dependencies; install fresh ones first.
 (use-package transient
+  :ensure t)
+
+(use-package with-editor
   :ensure t)
 
 (use-package magit
   :ensure t
-  :after transient
+  :after (transient with-editor)
   :bind ("C-x g" . magit-status))
 
 (use-package diff-hl
