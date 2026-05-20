@@ -105,9 +105,12 @@
   (doom-modeline-position-column-line-format '("L%l C%c")))
 
 ;;; Font
-(set-face-attribute 'default nil :family "Source Code Pro" :height 130)
-(set-face-attribute 'fixed-pitch nil :family "Source Code Pro")
-(set-face-attribute 'variable-pitch nil :family "Source Code Pro")
+(let ((font (if (member "Source Code Pro" (font-family-list))
+                "Source Code Pro"
+              "Monospace")))
+  (set-face-attribute 'default nil :family font :height 130)
+  (set-face-attribute 'fixed-pitch nil :family font)
+  (set-face-attribute 'variable-pitch nil :family font))
 
 (provide 'init-ui)
 ;;; init-ui.el ends here

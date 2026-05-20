@@ -9,20 +9,24 @@
 
 (use-package eglot
   :ensure nil
-  :hook ((c-mode          . eglot-ensure)
-         (c++-mode        . eglot-ensure)
-         (c-ts-mode       . eglot-ensure)
-         (c++-ts-mode     . eglot-ensure)
-         (js-mode         . eglot-ensure)
-         (js-ts-mode      . eglot-ensure)
-         (typescript-ts-mode . eglot-ensure)
-         (tsx-ts-mode     . eglot-ensure)
-         (cmake-ts-mode   . eglot-ensure))
   :custom
   (eglot-autoshutdown t)
   (eglot-events-buffer-size 0)
   ;; Disable on-type formatting — it reshapes code mid-edit without being asked.
-  (eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider)))
+  (eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
+  :config
+  (when (executable-find "clangd")
+    (add-hook 'c-mode-hook    #'eglot-ensure)
+    (add-hook 'c++-mode-hook  #'eglot-ensure)
+    (add-hook 'c-ts-mode-hook   #'eglot-ensure)
+    (add-hook 'c++-ts-mode-hook #'eglot-ensure))
+  (when (executable-find "typescript-language-server")
+    (add-hook 'js-mode-hook             #'eglot-ensure)
+    (add-hook 'js-ts-mode-hook          #'eglot-ensure)
+    (add-hook 'typescript-ts-mode-hook  #'eglot-ensure)
+    (add-hook 'tsx-ts-mode-hook         #'eglot-ensure))
+  (when (executable-find "cmake-language-server")
+    (add-hook 'cmake-ts-mode-hook #'eglot-ensure)))
 
 ;;; Hover docs & signature help in a floating childframe
 
