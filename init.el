@@ -45,6 +45,11 @@
 (elpaca elpaca-use-package
   (elpaca-use-package-mode))
 
+;; compat is a transitive dependency of many packages; install it before any
+;; modules load to avoid "installed version lower than min required" errors.
+(use-package compat :ensure t)
+(elpaca-wait)
+
 ;;; Modules
 
 (add-to-list 'load-path (expand-file-name "lisp/" user-emacs-directory))

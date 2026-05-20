@@ -1,5 +1,9 @@
 ;;; init-completion.el --- Minibuffer & in-buffer completion -*- lexical-binding: t -*-
 
+;; Many completion packages require a newer compat than Emacs ships.
+(use-package compat
+  :ensure t)
+
 ;;; Minibuffer
 
 (use-package helm
