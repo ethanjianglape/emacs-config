@@ -52,6 +52,44 @@ ln -s ~/Projects/emacs-config ~/.emacs.d
 emacs
 ```
 
+## System dependencies
+
+These must be installed before launching Emacs — elpaca cannot install them.
+
+### libvterm (required for the terminal)
+
+The `vterm` package compiles a C extension against libvterm. Emacs will error on startup if it is missing.
+
+```bash
+# Arch
+pacman -S libvterm
+# Ubuntu/Debian
+apt install libvterm-dev
+# macOS
+brew install libvterm
+```
+
+### Nerd Fonts (required for icons)
+
+`doom-modeline` and `centaur-tabs` use `nerd-icons` for icons in the modeline and tab bar. Without the fonts installed you will see boxes or question marks instead of icons. Run this once after first launch:
+
+```
+M-x nerd-icons-install-fonts
+```
+
+### C compiler (required for tree-sitter grammars)
+
+Tree-sitter grammars are downloaded and compiled automatically on demand when you first open a relevant file. A C compiler must be present for this to work.
+
+```bash
+# Arch
+pacman -S gcc
+# Ubuntu/Debian
+apt install build-essential
+# macOS
+xcode-select --install
+```
+
 ## LSP servers
 
 eglot will activate automatically for a language if its server is found in `PATH`. Install whichever you need:
