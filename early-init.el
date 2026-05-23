@@ -27,7 +27,9 @@
       '((menu-bar-lines . 0)
         (tool-bar-lines . 0)
         (vertical-scroll-bars . nil)
-        (horizontal-scroll-bars . nil)))
+        (horizontal-scroll-bars . nil)
+        (fullscreen . maximized)
+        (cursor-type . bar)))
 
 (setq frame-inhibit-implied-resize t
       inhibit-startup-screen t)

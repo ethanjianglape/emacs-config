@@ -21,6 +21,9 @@
 (setq use-short-answers t              ; y/n instead of yes/no
       confirm-kill-emacs 'yes-or-no-p)
 
+;;; Cursor
+(blink-cursor-mode -1)
+
 ;;; Editing basics
 (setq-default indent-tabs-mode nil
               tab-width 4

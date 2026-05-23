@@ -17,6 +17,7 @@
 ;;; File browser sidebar
 (use-package treemacs
   :ensure t
+  :demand t
   :bind ("C-c t" . treemacs)
   :custom
   (treemacs-width 30)
@@ -32,6 +33,7 @@
   (treemacs-hide-gitignored-files-mode t)
   (treemacs-git-mode 'deferred)    ; async git status — keeps UI responsive
   :hook
+  (emacs-startup . treemacs)
   (treemacs-mode . (lambda () (setq-local mode-line-format nil))))
 
 (use-package treemacs-nerd-icons
@@ -54,7 +56,6 @@
   (centaur-tabs-icon-type 'nerd-icons)
   (centaur-tabs-set-modified-marker t)   ; dot on unsaved buffers
   (centaur-tabs-modified-marker "●")
-  (centaur-tabs-group-by-projectile-project t)
   (centaur-tabs-set-close-button nil)    ; no per-tab close button
   :bind (("C-<prior>" . centaur-tabs-backward)   ; C-PageUp
          ("C-<next>"  . centaur-tabs-forward))    ; C-PageDown
@@ -69,13 +70,12 @@
   ;; Show tab bar in vterm even though its window is dedicated (side window)
   (defun my/centaur-tabs-hide-tab (x)
     (let ((name (format "%s" x)))
-      (or (and (window-dedicated-p (selected-window))
-               (not (derived-mode-p 'vterm-mode)))
-          (cl-dolist (prefix centaur-tabs-excluded-prefixes)
-            (when (string-prefix-p prefix name)
-              (cl-return t)))
-          (and (string-prefix-p "magit" name)
-               (not (file-name-extension name))))))
+      (or
+       ;; Hide all *Name* special/internal buffers (catches vterm, messages, etc.)
+       (and (string-prefix-p "*" name) (string-suffix-p "*" name))
+       ;; Hide magit status/log buffers (no file extension = not a file buffer).
+       (and (string-prefix-p "magit" name)
+            (not (file-name-extension name))))))
   (setq centaur-tabs-hide-tab-function #'my/centaur-tabs-hide-tab))
 
 ;;; Which-key (built-in since Emacs 30)

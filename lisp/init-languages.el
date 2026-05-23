@@ -19,22 +19,25 @@
   :ensure t
   :config
   (setq treesit-auto-install t)
-  (setq treesit-auto-langs '(c cpp cmake javascript typescript tsx)))
+  (setq treesit-auto-langs '(c cpp cmake javascript typescript tsx))
+  ;; global-treesit-auto-mode remaps classic modes to ts-modes only when the
+  ;; grammar is actually available, falling back gracefully otherwise.
+  (global-treesit-auto-mode))
 
-;;; Mode remapping
+;; TypeScript and TSX have no classic built-in Emacs mode.
+;; Use ts-modes when the grammar is present; fall back to js-mode otherwise.
+(if (treesit-language-available-p 'typescript)
+    (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.ts\\'" . js-mode)))
+(if (treesit-language-available-p 'tsx)
+    (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . js-mode)))
 
-(dolist (mapping '((c-mode   . c-ts-mode)
-                   (c++-mode . c++-ts-mode)
-                   (js-mode  . js-ts-mode)))
-  (add-to-list 'major-mode-remap-alist mapping))
-
-;; TypeScript and TSX have no classic Emacs mode, so add directly.
-(add-to-list 'auto-mode-alist '("\\.ts\\'"  . typescript-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
-
-;; CMake
-(add-to-list 'auto-mode-alist '("CMakeLists\\.txt\\'" . cmake-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.cmake\\'"         . cmake-ts-mode))
+;; CMake — only map to ts-mode when the grammar is available.
+;; Falls through to fundamental-mode otherwise, which is safe.
+(when (treesit-language-available-p 'cmake)
+  (add-to-list 'auto-mode-alist '("CMakeLists\\.txt\\'" . cmake-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.cmake\\'"         . cmake-ts-mode)))
 
 ;;; C/C++ indentation
 

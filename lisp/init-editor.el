@@ -61,21 +61,20 @@
                            (preserve-size . (nil . t))
                            (window-parameters . ((no-delete-other-windows . t))))))))))
 
-;;; Persistent bottom panel for terminals, compilation buffers, etc.
+;;; Popup panel for transient output buffers
+;;
+;; vterm is intentionally excluded — it lives in its own persistent side window
+;; managed by my/open-vterm-bottom and should never be treated as a popup.
 (use-package popper
   :ensure t
   :bind (("C-`" . popper-toggle)
          ("M-`" . popper-cycle))
   :custom
-  (popper-reference-buffers '(vterm-mode
-                               "\\*vterm.*\\*"
+  (popper-reference-buffers '(compilation-mode
                                "\\*compilation\\*"
-                               compilation-mode))
-  (popper-display-function #'display-buffer-in-side-window)
-  (popper-display-parameters '((side          . bottom)
-                                (slot          . 0)
-                                (window-height . my/vterm-height)
-                                (preserve-size . (nil . t))))
+                               "\\*grep\\*"
+                               "\\*xref\\*"
+                               help-mode))
   (popper-window-height 18)
   :config
   (popper-mode +1))

@@ -15,6 +15,9 @@
   ;; Disable on-type formatting — it reshapes code mid-edit without being asked.
   (eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
   :config
+  ;; Inlay hints are distracting — disable them whenever eglot connects.
+  ;; Toggle back on per-session with M-x eglot-inlay-hints-mode.
+  (add-hook 'eglot-managed-mode-hook (lambda () (eglot-inlay-hints-mode -1)))
   (when (executable-find "clangd")
     (add-hook 'c-mode-hook    #'eglot-ensure)
     (add-hook 'c++-mode-hook  #'eglot-ensure)
