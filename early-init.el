@@ -4,14 +4,9 @@
 
 ;;; Performance
 
-;; Defer garbage collection during startup
+;; Maximize GC threshold during startup; gcmh takes over afterwards.
 (setq gc-cons-threshold most-positive-fixnum
       gc-cons-percentage 0.6)
-
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (setq gc-cons-threshold (* 16 1024 1024)
-                  gc-cons-percentage 0.1)))
 
 ;; Suppress native-comp warnings
 (setq native-comp-async-report-warnings-errors 'silent)

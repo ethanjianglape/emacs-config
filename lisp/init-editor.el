@@ -85,5 +85,27 @@
   :config
   (apheleia-global-mode +1))
 
+;;; Code folding via tree-sitter
+;;
+;; Folds at exact syntax boundaries (functions, structs, if blocks, etc.)
+;; using the parse tree rather than just matching braces.
+;; Fold indicators appear in the fringe to the left of line numbers.
+;;
+;;   C-c f t   toggle fold at point
+;;   C-c f c   close all folds in buffer
+;;   C-c f o   open all folds in buffer
+;;   C-c f r   open fold at point and all nested folds inside it
+
+(use-package treesit-fold
+  :ensure t
+  :hook (((c-ts-mode c++-ts-mode cmake-ts-mode
+           js-ts-mode typescript-ts-mode tsx-ts-mode) . treesit-fold-mode)
+         (treesit-fold-mode . treesit-fold-indicators-mode))
+  :bind (:map treesit-fold-mode-map
+         ("C-c f t" . treesit-fold-toggle)
+         ("C-c f c" . treesit-fold-close-all)
+         ("C-c f o" . treesit-fold-open-all)
+         ("C-c f r" . treesit-fold-open-recursively)))
+
 (provide 'init-editor)
 ;;; init-editor.el ends here

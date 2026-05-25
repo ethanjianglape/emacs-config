@@ -12,6 +12,7 @@
          ("M-s g"   . helm-grep-do-git-grep))
   :custom
   (helm-move-to-line-cycle-in-source t) ; wrap around at top/bottom
+  (helm-M-x-history-length 5)          ; keep history short — C-o jumps to commands section
   (helm-M-x-fuzzy-match t)
   (helm-buffers-fuzzy-matching t)
   (helm-recentf-fuzzy-match t)

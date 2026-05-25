@@ -78,14 +78,28 @@
             (not (file-name-extension name))))))
   (setq centaur-tabs-hide-tab-function #'my/centaur-tabs-hide-tab))
 
-;;; Which-key (built-in since Emacs 30)
-(use-package which-key
-  :ensure nil
-  :init (which-key-mode))
+;;; Which-key (built-in since Emacs 30; installed via elpaca on 29)
+(if (>= emacs-major-version 30)
+    (use-package which-key :ensure nil :init (which-key-mode))
+  (use-package which-key :ensure t   :init (which-key-mode)))
 
 ;;; Line numbers
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
 (add-hook 'text-mode-hook #'display-line-numbers-mode)
+
+;;; Highlight current line
+(global-hl-line-mode 1)
+
+;;; Indentation guides
+(use-package indent-bars
+  :ensure t
+  :hook (prog-mode . indent-bars-mode)
+  :custom
+  ;; treesit-support causes arith-errors on C++ node types; plain
+  ;; whitespace-based bar placement works correctly without it.
+  (indent-bars-treesit-support nil)
+  ;; Don't draw a bar inside string literals.
+  (indent-bars-no-descend-string t))
 
 ;;; Modeline
 (use-package nerd-icons
@@ -101,7 +115,7 @@
   (doom-modeline-buffer-encoding nil) ; hide UTF-8 etc.
   (doom-modeline-percent-position nil) ; no position percentage
   (doom-modeline-column-zero-based nil)
-  (doom-modeline-position-line-format '("L%l"))  ; just line number, no column
+  (doom-modeline-position-line-format '("L%l C%c"))
   (doom-modeline-position-column-line-format '("L%l C%c")))
 
 ;;; Dashboard

@@ -60,5 +60,46 @@
 
 (add-hook 'context-menu-functions #'my/eglot-context-menu)
 
+;;; Tags-based navigation via citre (universal-ctags)
+;;
+;; Complements eglot for large codebases (e.g. the Linux kernel) where
+;; clangd struggles without a complete compile_commands.json.
+;;
+;; First-time setup for a project:
+;;   M-x citre-create-tags-file    — walk the tree and build a tags file
+;;   M-x citre-update-this-tags-file — refresh after large changes
+;;
+;; citre-config auto-enables citre-mode whenever a tags file is detected,
+;; so no manual setup is needed on subsequent visits.
+;;
+;; For the Linux kernel, generate compile_commands.json first so clangd
+;; can also help, then let citre handle cross-file symbol lookup:
+;;   python3 scripts/clang-tools/gen_compile_commands.py
+
+(use-package citre
+  :ensure t
+  :defer t
+  :init
+  ;; Auto-enable citre-mode in any buffer that can find a tags file.
+  (require 'citre-config)
+  :custom
+  (citre-default-create-tags-file-location 'project-root)
+  (citre-use-project-root-when-creating-tags t)
+  ;; Ask which languages to index when creating a tags file.
+  (citre-prompt-language-for-ctags-command t)
+  :bind (:map citre-mode-map
+              ("C-c c j" . citre-jump)           ; go to definition (tags)
+              ("C-c c k" . citre-jump-back)      ; jump back
+              ("C-c c p" . citre-peek)           ; peek definition in childframe
+              ("C-c c u" . citre-update-this-tags-file))
+  :config
+  ;; When eglot is active, append citre as an xref fallback so
+  ;; M-. still works for symbols the language server can't resolve.
+  (with-eval-after-load 'eglot
+    (add-hook 'eglot-managed-mode-hook
+              (lambda ()
+                (add-hook 'xref-backend-functions
+                          #'citre-xref-backend 90 :local)))))
+
 (provide 'init-lsp)
 ;;; init-lsp.el ends here
