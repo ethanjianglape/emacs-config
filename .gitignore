@@ -21,6 +21,8 @@ transient/
 places
 recentf
 projectile-bookmarks.eld
+history
+projects
 
 # Custom vars (machine-local)
 custom.el
