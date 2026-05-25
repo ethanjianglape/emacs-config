@@ -62,6 +62,7 @@
 (require 'init-git)
 (require 'init-projects)
 (require 'init-editor)
+(require 'init-org)
 (require 'init-keybinds)
 
 ;;; init.el ends here
