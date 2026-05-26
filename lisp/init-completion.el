@@ -43,7 +43,11 @@
   (corfu-auto-prefix 2)
   (corfu-cycle t)
   (corfu-quit-no-match 'separator)
-  :init (global-corfu-mode))
+  :init (global-corfu-mode)
+  :hook
+  ;; Org is prose — dabbrev sentence suggestions are more annoying than
+  ;; helpful there, so disable the popup entirely.
+  (org-mode . (lambda () (corfu-mode -1))))
 
 ;; Extra completion-at-point sources (files, words, etc.)
 (use-package cape

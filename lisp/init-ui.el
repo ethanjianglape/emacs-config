@@ -146,5 +146,18 @@
   (set-face-attribute 'fixed-pitch nil :family font)
   (set-face-attribute 'variable-pitch nil :family font))
 
+;;; CJK font: KaiTi for Chinese characters
+;;
+;; `set-fontset-font' registers a fallback font for a Unicode script.
+;; Targeting `'han' covers the full CJK Unified Ideographs block so
+;; any Chinese character not covered by the primary font falls back to
+;; KaiTi.  The guard prevents an error if the font is ever missing.
+;;
+;; KaiTi renders a bit small relative to Latin glyphs at the same point
+;; size, so we bump it to 15pt (the default face is 13pt / height 130).
+;; Adjust the :size value here to taste.
+(when (member "KaiTi" (font-family-list))
+  (set-fontset-font t 'han (font-spec :family "KaiTi" :size 26)))
+
 (provide 'init-ui)
 ;;; init-ui.el ends here
