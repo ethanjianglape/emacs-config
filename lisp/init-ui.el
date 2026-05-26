@@ -65,18 +65,24 @@
     (cond
      ((derived-mode-p 'vterm-mode)     '("Terminal"))
      ((derived-mode-p 'treemacs-mode)  '())
+     ;; Returning '() excludes the buffer from all groups — same trick as
+     ;; treemacs above.  This is more reliable than the hide-tab cache
+     ;; because centaur-tabs checks groups before it checks hide-tab.
+     ((derived-mode-p 'magit-mode)     '())
      (t (centaur-tabs-projectile-buffer-groups))))
   (setq centaur-tabs-buffer-groups-function #'my/centaur-tabs-buffer-groups)
-  ;; Show tab bar in vterm even though its window is dedicated (side window)
   (defun my/centaur-tabs-hide-tab (x)
     (let ((name (format "%s" x)))
       (or
-       ;; Hide all *Name* special/internal buffers (catches vterm, messages, etc.)
+       ;; Hide all *Name* special/internal buffers (catches messages, etc.)
        (and (string-prefix-p "*" name) (string-suffix-p "*" name))
-       ;; Hide magit status/log buffers (no file extension = not a file buffer).
-       (and (string-prefix-p "magit" name)
-            (not (file-name-extension name))))))
-  (setq centaur-tabs-hide-tab-function #'my/centaur-tabs-hide-tab))
+       ;; Belt-and-suspenders: all magit buffer names start with "magit".
+       (string-prefix-p "magit" name))))
+  (setq centaur-tabs-hide-tab-function #'my/centaur-tabs-hide-tab)
+  ;; Clear the hide-tab result cache so any already-visible magit tabs
+  ;; are re-evaluated immediately rather than served stale cached values.
+  (when (boundp 'centaur-tabs-hide-hash)
+    (clrhash centaur-tabs-hide-hash)))
 
 ;;; Which-key (built-in since Emacs 30; installed via elpaca on 29)
 (if (>= emacs-major-version 30)

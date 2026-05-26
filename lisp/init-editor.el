@@ -34,9 +34,16 @@
 (defvar my/vterm-height 18
   "Height in lines of the persistent bottom vterm window.")
 
+(defun my/vterm-next-name ()
+  "Return the lowest unused terminal buffer name (term 1, term 2, …)."
+  (let ((index 1))
+    (while (get-buffer (format "term %d" index))
+      (cl-incf index))
+    (format "term %d" index)))
+
 (defun my/open-vterm-bottom ()
   "Open vterm in a bottom side window that survives C-x 1."
-  (let ((buf (save-window-excursion (vterm) (current-buffer))))
+  (let ((buf (save-window-excursion (vterm (my/vterm-next-name)) (current-buffer))))
     (display-buffer-in-side-window
      buf `((side          . bottom)
            (slot          . 0)
@@ -46,14 +53,15 @@
 
 (add-hook 'emacs-startup-hook #'my/open-vterm-bottom)
 
-
 ;; When centaur-tabs "+" creates a new vterm, open it in the side window
 (with-eval-after-load 'centaur-tabs-functions
   (advice-add 'centaur-tabs--create-new-tab :around
               (lambda (orig-fn)
                 (if (not (derived-mode-p 'vterm-mode))
                     (funcall orig-fn)
-                  (let ((buf (save-window-excursion (vterm t) (current-buffer))))
+                  (let ((buf (save-window-excursion
+                               (vterm (my/vterm-next-name))
+                               (current-buffer))))
                     (display-buffer-in-side-window
                      buf `((side          . bottom)
                            (slot          . 0)
