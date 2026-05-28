@@ -43,6 +43,9 @@
 (setq use-short-answers t              ; y/n instead of yes/no
       confirm-kill-emacs 'yes-or-no-p)
 
+;; Clicking the echo area opens *Messages* by default — disable it.
+(define-key minibuffer-inactive-mode-map [mouse-1] #'ignore)
+
 ;;; Cursor
 (blink-cursor-mode -1)
 
