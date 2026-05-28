@@ -2,6 +2,47 @@
 
 ;;; Minibuffer
 
+(defun my-helm-display-frame-center (buffer &optional resume)
+  "Display `helm-buffer' in a separate frame which centered in parent frame."
+  (if (not (display-graphic-p))
+      ;; Fallback to default when frames are not usable.
+      (helm-default-display-buffer buffer)
+    (setq helm--buffer-in-new-frame-p t)
+    (let* ((parent (selected-frame))
+           (frame-pos (frame-position parent))
+           (parent-left (car frame-pos))
+           (parent-top (cdr frame-pos))
+           (width (/ (frame-width parent) 2))
+           (height (/ (frame-height parent) 3))
+           tab-bar-mode
+           (default-frame-alist
+            (if resume
+                (buffer-local-value 'helm--last-frame-parameters
+                                    (get-buffer buffer))
+              `((parent . ,parent)
+                (width . ,width)
+                (height . ,height)
+                (undecorated . ,helm-use-undecorated-frame-option)
+                (left-fringe . 0)
+                (right-fringe . 0)
+                (tool-bar-lines . 0)
+                (line-spacing . 0)
+                (desktop-dont-save . t)
+                (no-special-glyphs . t)
+                (inhibit-double-buffering . t)
+                (left . ,(+ parent-left (/ (* (frame-char-width parent) (frame-width parent)) 4)))
+                (top . ,(+ parent-top (/ (* (frame-char-height parent) (frame-height parent)) 6)))
+                (title . "Helm")
+                (vertical-scroll-bars . nil)
+                (menu-bar-lines . 0)
+                (fullscreen . nil)
+                (visible . ,(null helm-display-buffer-reuse-frame))
+                (internal-border-width . 12)
+                )))
+           display-buffer-alist)
+      (set-face-background 'internal-border (face-foreground 'default))
+      (helm-display-buffer-popup-frame buffer default-frame-alist))))
+
 (use-package helm
   :ensure t
   :demand t
@@ -12,23 +53,15 @@
          ("M-s g"   . helm-grep-do-git-grep))
   :custom
   (helm-move-to-line-cycle-in-source t) ; wrap around at top/bottom
-  (helm-M-x-history-length 5)          ; keep history short — C-o jumps to commands section
   (helm-M-x-fuzzy-match t)
   (helm-buffers-fuzzy-matching t)
   (helm-recentf-fuzzy-match t)
   (helm-ff-file-name-history-use-recentf t)
-  (helm-display-function #'helm-display-buffer-in-own-frame)
+  (helm-display-function #'my-helm-display-frame-center)
   (helm-display-buffer-reuse-frame t)
   (helm-use-undecorated-frame-option t)
   :config
   (helm-mode 1)
-  ;; Clean up the helm frame: padding + no mode-line
-  (add-hook 'helm-after-initialize-hook
-            (lambda ()
-              (when (frame-live-p helm-popup-frame)
-                (set-frame-parameter helm-popup-frame 'internal-border-width 12)
-                (set-face-background 'internal-border "#abb2bf" helm-popup-frame)
-                (set-frame-width helm-popup-frame 160))))
   (add-hook 'helm-major-mode-hook
             (lambda () (setq-local mode-line-format nil))))
 
