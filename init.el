@@ -63,6 +63,7 @@
 (require 'init-projects)
 (require 'init-editor)
 (require 'init-org)
+(require 'init-devcontainers)
 (require 'init-keybinds)
 
 ;;; init.el ends here

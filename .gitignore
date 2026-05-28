@@ -11,6 +11,7 @@ tree-sitter/
 
 # Auto-generated
 auto-save-list/
+*.html
 tramp
 .#*
 \#*\#

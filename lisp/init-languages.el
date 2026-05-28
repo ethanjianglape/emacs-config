@@ -19,7 +19,7 @@
   :ensure t
   :config
   (setq treesit-auto-install t)
-  (setq treesit-auto-langs '(c cpp cmake javascript typescript tsx))
+  (setq treesit-auto-langs '(c cpp cmake javascript typescript tsx yaml))
   ;; global-treesit-auto-mode remaps classic modes to ts-modes only when the
   ;; grammar is actually available, falling back gracefully otherwise.
   (global-treesit-auto-mode))
@@ -84,6 +84,49 @@
 
 (add-hook 'c-ts-mode-hook   #'my/c-ts-fix-comment-face)
 (add-hook 'c++-ts-mode-hook #'my/c-ts-fix-comment-face)
+
+;;; YAML (.yaml, .yml, .bst BuildStream elements)
+
+(use-package yaml-mode
+  :ensure t)
+
+(if (treesit-language-available-p 'yaml)
+    (progn
+      (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-ts-mode))
+      (add-to-list 'auto-mode-alist '("\\.yml\\'"  . yaml-ts-mode))
+      (add-to-list 'auto-mode-alist '("\\.bst\\'"  . yaml-ts-mode)))
+  (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))
+  (add-to-list 'auto-mode-alist '("\\.yml\\'"  . yaml-mode))
+  (add-to-list 'auto-mode-alist '("\\.bst\\'"  . yaml-mode)))
+
+;;; Bazel
+;;
+;; Covers BUILD/WORKSPACE files, .bzl Starlark files, and .bazelrc.
+;; Formatting requires buildifier: https://github.com/bazelbuild/buildtools
+
+(use-package bazel
+  :ensure t
+  :mode (("BUILD\\'"           . bazel-mode)
+         ("BUILD\\.bazel\\'"   . bazel-mode)
+         ("WORKSPACE\\'"       . bazel-mode)
+         ("WORKSPACE\\.bazel\\'" . bazel-mode)
+         ("\\.bzl\\'"          . bazel-starlark-mode)
+         ("\\.bazelrc\\'"      . bazelrc-mode))
+  :config
+  (with-eval-after-load 'apheleia
+    (when (executable-find "buildifier")
+      (setf (alist-get 'buildifier apheleia-formatters) '("buildifier" "-"))
+      (setf (alist-get 'bazel-mode apheleia-mode-alist) 'buildifier)
+      (setf (alist-get 'bazel-starlark-mode apheleia-mode-alist) 'buildifier))))
+
+;;; Markdown
+
+(use-package markdown-mode
+  :ensure t
+  :mode (("\\.md\\'"       . gfm-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :custom
+  (markdown-fontify-code-blocks-natively t))
 
 ;;; Assembly
 ;;
