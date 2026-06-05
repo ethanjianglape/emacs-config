@@ -59,6 +59,9 @@
 
 (add-hook 'c-ts-mode-hook   #'my/set-c-indent)
 (add-hook 'c++-ts-mode-hook #'my/set-c-indent)
+(add-hook 'c++-mode-hook #'my/set-c-indent)
+;; (add-hook 'c++-ts-mode-hook #'flyspell-prog-mode)
+;; (add-hook 'c++-mode-hook #'flyspell-prog-mode)
 
 ;;; C/C++ comment fontification fallback
 ;;
@@ -84,6 +87,69 @@
 
 (add-hook 'c-ts-mode-hook   #'my/c-ts-fix-comment-face)
 (add-hook 'c++-ts-mode-hook #'my/c-ts-fix-comment-face)
+
+(use-package clang-format
+  :ensure t)
+
+(defun clang-format--indent-line (&rest _)
+  "Indent current line using clang-format, if not on a blank line.
+
+Returns nil on blank lines. Discards replacements which
+affect text beyond the end of the line."
+  (when (save-excursion
+          (beginning-of-line)
+          (not (looking-at-p "[ \t]*$")))
+    (prog1 t
+      ;; Remove trailing whitespace
+      (save-excursion
+        (end-of-line)
+        (delete-char (- (skip-chars-backward " \t"))))
+      ;; Discard replacements which affect text beyond end of line
+      (let* ((next-char (clang-format--bufferpos-to-filepos
+                         (save-excursion
+                           (end-of-line)
+                           (skip-chars-forward " \t\r\n")
+                           (point))
+                         'exact 'utf-8-unix))
+             (advice `(lambda (offset length &rest _)
+                        (< (+ offset length) ,next-char))))
+        (advice-add #'clang-format--replace :before-while advice)
+        (unwind-protect
+            (let ((inhibit-message t))
+              (clang-format-region (line-beginning-position)
+                                   (line-end-position)))
+          (advice-remove #'clang-format--replace advice)))
+      (when (< (current-column) (current-indentation))
+        (back-to-indentation)))))
+
+;;;###autoload
+(define-minor-mode clang-format-indent-mode
+  "Use clang-format to control indentation on contentful lines.
+
+Clang format indent mode is a buffer-local minor mode. When
+enabled, indentation for lines that do not solely consist of
+whitespace will be determined by running the buffer through the
+`clang-format-executable' program. On empty lines, the existing
+indentation function will be used."
+  :global nil :group 'tools
+  (if clang-format-indent-mode
+      (advice-add indent-line-function :before-until
+                  #'clang-format--indent-line)
+    (advice-remove indent-line-function #'clang-format--indent-line)))
+
+(add-hook 'c++-mode-hook #'clang-format-indent-mode)
+(add-hook 'c++-ts-mode-hook #'clang-format-indent-mode)
+
+;;; doxygen
+
+(use-package highlight-doxygen
+  :ensure t
+  :config
+  (highlight-doxygen-global-mode +1))
+
+(use-package doxymacs
+  :ensure t
+  :hook (c++-ts-mode-hook . doxymacs-mode))
 
 ;;; YAML (.yaml, .yml, .bst BuildStream elements)
 
@@ -127,6 +193,10 @@
          ("\\.markdown\\'" . markdown-mode))
   :custom
   (markdown-fontify-code-blocks-natively t))
+
+;;; systemd
+(use-package systemd
+  :ensure t)
 
 ;;; Assembly
 ;;

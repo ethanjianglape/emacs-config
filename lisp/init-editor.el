@@ -79,10 +79,10 @@
          ("M-`" . popper-cycle))
   :custom
   (popper-reference-buffers '(compilation-mode
-                               "\\*compilation\\*"
-                               "\\*grep\\*"
-                               "\\*xref\\*"
-                               help-mode))
+                              "\\*compilation\\*"
+                              "\\*grep\\*"
+                              "\\*xref\\*"
+                              help-mode))
   (popper-window-height 18)
   :config
   (popper-mode +1))
@@ -107,13 +107,13 @@
 (use-package treesit-fold
   :ensure t
   :hook (((c-ts-mode c++-ts-mode cmake-ts-mode
-           js-ts-mode typescript-ts-mode tsx-ts-mode) . treesit-fold-mode)
+                     js-ts-mode typescript-ts-mode tsx-ts-mode) . treesit-fold-mode)
          (treesit-fold-mode . treesit-fold-indicators-mode))
   :bind (:map treesit-fold-mode-map
-         ("C-c f t" . treesit-fold-toggle)
-         ("C-c f c" . treesit-fold-close-all)
-         ("C-c f o" . treesit-fold-open-all)
-         ("C-c f r" . treesit-fold-open-recursively)))
+              ("C-c f t" . treesit-fold-toggle)
+              ("C-c f c" . treesit-fold-close-all)
+              ("C-c f o" . treesit-fold-open-all)
+              ("C-c f r" . treesit-fold-open-recursively)))
 
 (provide 'init-editor)
 ;;; init-editor.el ends here

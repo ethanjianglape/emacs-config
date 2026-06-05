@@ -10,7 +10,7 @@
 (use-package magit
   :ensure t
   :after (transient with-editor)
-  :bind ("C-x g" . magit-status))
+  :bind ("M-g" . magit-status))
 
 (use-package diff-hl
   :ensure t

@@ -56,5 +56,12 @@
 (delete-selection-mode 1)
 (global-auto-revert-mode 1)
 
+(setq remote-file-name-inhibit-locks t
+      tramp-use-scp-direct-remote-copying t
+      remote-file-name-inhibit-auto-save-visited t)
+
+(setq tramp-copy-size-limit (* 1024 1024) ;; 1MB
+      tramp-verbose 2)
+
 (provide 'init-defaults)
 ;;; init-defaults.el ends here

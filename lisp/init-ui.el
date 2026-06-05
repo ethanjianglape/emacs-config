@@ -5,8 +5,17 @@
   :ensure t
   :config
   (setq doom-themes-enable-bold t
-        doom-themes-enable-italic t)
-  (load-theme 'doom-one t)
+        doom-themes-enable-italic t
+	    doom-nord-brighter-comments t
+	    doom-nord-comment-bg nil
+        doom-nord-brighter-modeline t
+	    doom-one-brighter-comments t
+        doom-one-brighter-modeline t
+	    doom-one-comment-bg nil
+        doom-dracula-brighter-comments t
+        doom-dracula-brighter-modeline t
+        doom-dracula-comment-bg nil)
+  (load-theme 'doom-dracula t)
   (doom-themes-visual-bell-config)
   (doom-themes-org-config)
   ;; doom-one comments are intentionally muted (#5B6268); make them italic
@@ -18,7 +27,7 @@
 (use-package treemacs
   :ensure t
   :demand t
-  :bind ("C-c t" . treemacs)
+  :bind ("M-t" . treemacs)
   :custom
   (treemacs-width 30)
   (treemacs-width-is-initially-locked nil)
@@ -30,7 +39,7 @@
   (treemacs-follow-mode t)         ; keep sidebar in sync with current buffer
   (treemacs-filewatch-mode t)      ; auto-refresh on filesystem changes
   (treemacs-fringe-indicator-mode t)
-  (treemacs-hide-gitignored-files-mode t)
+  (treemacs-hide-gitignored-files-mode nil)
   (treemacs-git-mode 'deferred)    ; async git status — keeps UI responsive
   :hook
   (emacs-startup . treemacs)
@@ -148,7 +157,7 @@
 (let ((font (if (member "Source Code Pro" (font-family-list))
                 "Source Code Pro"
               "Monospace")))
-  (set-face-attribute 'default nil :family font :height 130)
+  (set-face-attribute 'default nil :family font :height 120)
   (set-face-attribute 'fixed-pitch nil :family font)
   (set-face-attribute 'variable-pitch nil :family font))
 

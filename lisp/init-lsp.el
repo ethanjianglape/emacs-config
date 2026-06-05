@@ -35,7 +35,7 @@
 
 (use-package eldoc-box
   :ensure t
-  :hook (eglot-managed-mode . eldoc-box-hover-at-point-mode)
+  :hook (eglot-managed-mode . eldoc-box-mouse-mode)
   :custom
   (eldoc-box-max-pixel-width  600)
   (eldoc-box-max-pixel-height 400)
