@@ -83,6 +83,24 @@
         eglot-connect-timeout 60))
 
 ;;; ──────────────────────────────────────────────
+;;; tramp-rpc: binary-protocol TRAMP backend
+
+;; tramp-rpc requires TRAMP 2.8.1.4+; the built-in is 2.7.x on Emacs 30,
+;; so pull the latest TRAMP from GNU ELPA first.
+(use-package tramp
+  :ensure t)
+
+;; Uses a lightweight Rust server on the remote to handle file ops via
+;; MessagePack-RPC instead of shelling out — 2-38x faster for stat-heavy
+;; operations (magit, projectile indexing).  Requires Emacs 30.1+.
+;; Access remote files with /rpc:host:/path instead of /ssh:host:/path.
+;; Note: multi-hop to docker containers (/rpc:vdi|docker:container:) is
+;; unverified — fall back to /ssh:vdi|docker:container: for those.
+(use-package tramp-rpc
+  :ensure (:host github :repo "ArthurHeymans/emacs-tramp-rpc" :files ("lisp/*.el"))
+  :after tramp)
+
+;;; ──────────────────────────────────────────────
 ;;; Multi-hop: VDI → devcontainer
 
 ;; TRAMP multi-hop syntax to open a devcontainer inside a VDI over SSH:
