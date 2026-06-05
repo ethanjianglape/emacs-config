@@ -85,11 +85,6 @@
 ;;; ──────────────────────────────────────────────
 ;;; tramp-rpc: binary-protocol TRAMP backend
 
-;; tramp-rpc requires TRAMP 2.8.1.4+; the built-in is 2.7.x on Emacs 30,
-;; so pull the latest TRAMP from GNU ELPA first.
-(use-package tramp
-  :ensure t)
-
 ;; Uses a lightweight Rust server on the remote to handle file ops via
 ;; MessagePack-RPC instead of shelling out — 2-38x faster for stat-heavy
 ;; operations (magit, projectile indexing).  Requires Emacs 30.1+.

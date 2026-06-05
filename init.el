@@ -48,6 +48,7 @@
 ;; compat is a transitive dependency of many packages; install it before any
 ;; modules load to avoid "installed version lower than min required" errors.
 (use-package compat :ensure t)
+(use-package tramp :ensure t)
 (elpaca-wait)
 
 ;;; Modules
