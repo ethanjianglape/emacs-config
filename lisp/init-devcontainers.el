@@ -7,19 +7,8 @@
 ;;
 ;; Coder path (remote workspace via SSH)
 ;;   Requires: coder CLI + run M-x my/coder-config-ssh once to populate ~/.ssh/config
-
-;;; ──────────────────────────────────────────────
-;;; Shared: eglot over TRAMP
 ;;
-;; Both paths surface files via TRAMP.  eglot auto-detects TRAMP buffers
-;; and runs the language server inside the remote environment — no extra
-;; setup needed as long as the container/workspace image has the LSP servers.
-;;   - withhold-process-id: avoids PID mismatches on some container runtimes
-;;   - connect-timeout:     workspaces can be slow to respond on first connect
-
-(with-eval-after-load 'eglot
-  (setq eglot-withhold-process-id t)
-  (setq eglot-connect-timeout 60))
+;; TRAMP / eglot tuning for both paths lives in init-tramp.el.
 
 ;;; ──────────────────────────────────────────────
 ;;; VDI path: devcontainer CLI

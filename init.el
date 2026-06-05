@@ -55,6 +55,7 @@
 (add-to-list 'load-path (expand-file-name "lisp/" user-emacs-directory))
 
 (require 'init-defaults)
+(require 'init-tramp)
 (require 'init-ui)
 (require 'init-completion)
 (require 'init-lsp)
