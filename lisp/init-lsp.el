@@ -82,6 +82,10 @@
   :init
   ;; Auto-enable citre-mode in any buffer that can find a tags file.
   (require 'citre-config)
+  ;; citre-config's find-file-hook calls locate-dominating-file which on remote
+  ;; paths makes many TRAMP round-trips climbing the directory tree. Skip it.
+  (advice-add 'citre-auto-enable-citre-mode :before-while
+              (lambda () (not (file-remote-p default-directory))))
   :custom
   (citre-default-create-tags-file-location 'project-root)
   (citre-use-project-root-when-creating-tags t)
