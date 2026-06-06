@@ -1,5 +1,7 @@
 ;;; init-git.el --- Git integration -*- lexical-binding: t -*-
 
+(setq vc-handled-backends '())
+
 ;; Emacs ships older versions of these magit dependencies; install fresh ones first.
 (use-package transient
   :ensure t)
