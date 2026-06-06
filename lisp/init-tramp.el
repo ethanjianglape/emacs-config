@@ -93,7 +93,9 @@
 ;; unverified — fall back to /ssh:vdi|docker:container: for those.
 (use-package tramp-rpc
   :ensure (:host github :repo "ArthurHeymans/emacs-tramp-rpc" :files ("lisp/*.el"))
-  :after tramp)
+  :after tramp
+  :config
+  (setq tramp-rpc-deploy-auto-deploy nil))
 
 ;;; ──────────────────────────────────────────────
 ;;; Multi-hop: VDI → devcontainer
