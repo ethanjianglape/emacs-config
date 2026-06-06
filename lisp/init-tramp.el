@@ -95,7 +95,8 @@
   :ensure (:host github :repo "ArthurHeymans/emacs-tramp-rpc" :files ("lisp/*.el"))
   :after tramp
   :config
-  (setq tramp-rpc-deploy-auto-deploy nil))
+  (setq tramp-rpc-deploy-auto-deploy nil
+        tramp-rpc-deploy-remote-binary-path "~/.cache/emacs/tramp-rpc/tramp-rpc-server"))
 
 ;;; ──────────────────────────────────────────────
 ;;; Multi-hop: VDI → devcontainer
