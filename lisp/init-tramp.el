@@ -68,6 +68,22 @@
         eglot-connect-timeout 60))
 
 ;;; ──────────────────────────────────────────────
+;;; helm + tramp-rpc: fix first-visit empty directory listing
+
+;; Helm sets non-essential=t when building file candidates to avoid blocking
+;; on slow completions.  tramp-rpc sees this and skips connection setup,
+;; returning an empty listing on first visit to an /rpc: path.  Binding
+;; non-essential=nil for rpc paths forces the connection to be established so
+;; the first directory display works correctly.
+(with-eval-after-load 'helm-files
+  (advice-add 'helm-ff-directory-files :around
+              (lambda (orig dir &rest args)
+                (if (string-match-p "\\`/rpc:" (or dir ""))
+                    (let ((non-essential nil))
+                      (apply orig dir args))
+                  (apply orig dir args)))))
+
+;;; ──────────────────────────────────────────────
 ;;; tramp-rpc: binary-protocol TRAMP backend
 
 ;; Uses a lightweight Rust server on the remote to handle file ops via
