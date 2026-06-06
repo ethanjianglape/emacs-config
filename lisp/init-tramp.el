@@ -96,7 +96,8 @@
   :after tramp
   :config
   (setq tramp-rpc-deploy-auto-deploy nil
-        tramp-rpc-deploy-remote-binary-path "/home/ethan.lape@torc.ai/.cache/emacs/tramp-rpc/tramp-rpc-server"))
+        tramp-rpc-deploy-remote-binary-path "/home/ethan.lape@torc.ai/.cache/emacs/tramp-rpc/tramp-rpc-server")
+	tramp-rpc-deploy-remote-directory "/home/ethan.lape@torc.ai/.cache/emacs/tramp-rpc"))
 
 ;;; ──────────────────────────────────────────────
 ;;; Multi-hop: VDI → devcontainer
