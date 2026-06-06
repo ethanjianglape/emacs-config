@@ -18,18 +18,22 @@
   ;; Inlay hints are distracting — disable them whenever eglot connects.
   ;; Toggle back on per-session with M-x eglot-inlay-hints-mode.
   (add-hook 'eglot-managed-mode-hook (lambda () (eglot-inlay-hints-mode -1)))
+  (defun my/eglot-ensure-local ()
+    "Start eglot only for local files; use M-x eglot manually on remote."
+    (unless (file-remote-p default-directory)
+      (eglot-ensure)))
   (when (executable-find "clangd")
-    (add-hook 'c-mode-hook    #'eglot-ensure)
-    (add-hook 'c++-mode-hook  #'eglot-ensure)
-    (add-hook 'c-ts-mode-hook   #'eglot-ensure)
-    (add-hook 'c++-ts-mode-hook #'eglot-ensure))
+    (add-hook 'c-mode-hook    #'my/eglot-ensure-local)
+    (add-hook 'c++-mode-hook  #'my/eglot-ensure-local)
+    (add-hook 'c-ts-mode-hook   #'my/eglot-ensure-local)
+    (add-hook 'c++-ts-mode-hook #'my/eglot-ensure-local))
   (when (executable-find "typescript-language-server")
-    (add-hook 'js-mode-hook             #'eglot-ensure)
-    (add-hook 'js-ts-mode-hook          #'eglot-ensure)
-    (add-hook 'typescript-ts-mode-hook  #'eglot-ensure)
-    (add-hook 'tsx-ts-mode-hook         #'eglot-ensure))
+    (add-hook 'js-mode-hook             #'my/eglot-ensure-local)
+    (add-hook 'js-ts-mode-hook          #'my/eglot-ensure-local)
+    (add-hook 'typescript-ts-mode-hook  #'my/eglot-ensure-local)
+    (add-hook 'tsx-ts-mode-hook         #'my/eglot-ensure-local))
   (when (executable-find "cmake-language-server")
-    (add-hook 'cmake-ts-mode-hook #'eglot-ensure)))
+    (add-hook 'cmake-ts-mode-hook #'my/eglot-ensure-local)))
 
 ;;; Hover docs & signature help in a floating childframe
 
