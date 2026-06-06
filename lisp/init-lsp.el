@@ -18,29 +18,18 @@
   ;; Inlay hints are distracting — disable them whenever eglot connects.
   ;; Toggle back on per-session with M-x eglot-inlay-hints-mode.
   (add-hook 'eglot-managed-mode-hook (lambda () (eglot-inlay-hints-mode -1)))
-  (defun my/eglot-ensure-maybe ()
-    "Start eglot immediately for local files; defer for remote to avoid blocking.
-On remote, the server starts in the background after 1s of idle time so the
-file opens instantly and LSP features arrive once clangd has connected."
-    (if (file-remote-p default-directory)
-        (let ((buf (current-buffer)))
-          (run-with-idle-timer 1 nil (lambda ()
-                                       (when (buffer-live-p buf)
-                                         (with-current-buffer buf
-                                           (eglot-ensure))))))
-      (eglot-ensure)))
   (when (executable-find "clangd")
-    (add-hook 'c-mode-hook    #'my/eglot-ensure-maybe)
-    (add-hook 'c++-mode-hook  #'my/eglot-ensure-maybe)
-    (add-hook 'c-ts-mode-hook   #'my/eglot-ensure-maybe)
-    (add-hook 'c++-ts-mode-hook #'my/eglot-ensure-maybe))
+    (add-hook 'c-mode-hook    #'eglot-ensure)
+    (add-hook 'c++-mode-hook  #'eglot-ensure)
+    (add-hook 'c-ts-mode-hook   #'eglot-ensure)
+    (add-hook 'c++-ts-mode-hook #'eglot-ensure))
   (when (executable-find "typescript-language-server")
-    (add-hook 'js-mode-hook             #'my/eglot-ensure-maybe)
-    (add-hook 'js-ts-mode-hook          #'my/eglot-ensure-maybe)
-    (add-hook 'typescript-ts-mode-hook  #'my/eglot-ensure-maybe)
-    (add-hook 'tsx-ts-mode-hook         #'my/eglot-ensure-maybe))
+    (add-hook 'js-mode-hook             #'eglot-ensure)
+    (add-hook 'js-ts-mode-hook          #'eglot-ensure)
+    (add-hook 'typescript-ts-mode-hook  #'eglot-ensure)
+    (add-hook 'tsx-ts-mode-hook         #'eglot-ensure))
   (when (executable-find "cmake-language-server")
-    (add-hook 'cmake-ts-mode-hook #'my/eglot-ensure-maybe)))
+    (add-hook 'cmake-ts-mode-hook #'eglot-ensure)))
 
 ;;; Hover docs & signature help in a floating childframe
 
@@ -93,10 +82,6 @@ file opens instantly and LSP features arrive once clangd has connected."
   :init
   ;; Auto-enable citre-mode in any buffer that can find a tags file.
   (require 'citre-config)
-  ;; citre-config's find-file-hook calls locate-dominating-file which on remote
-  ;; paths makes many TRAMP round-trips climbing the directory tree. Skip it.
-  (advice-add 'citre-auto-enable-citre-mode :before-while
-              (lambda () (not (file-remote-p default-directory))))
   :custom
   (citre-default-create-tags-file-location 'project-root)
   (citre-use-project-root-when-creating-tags t)
