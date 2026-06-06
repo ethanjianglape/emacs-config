@@ -5,6 +5,7 @@
 elpa/
 eln-cache/
 elpaca/
+emacs-tramp-rpc/
 
 # Tree-sitter grammars (platform-specific binaries, auto-downloaded)
 tree-sitter/
