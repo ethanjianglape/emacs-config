@@ -13,7 +13,10 @@
       remote-file-name-inhibit-auto-save-visited t
       ;; Cache remote file attributes briefly — avoids a round-trip on every
       ;; stat/access check while still reflecting changes made by other processes.
-      remote-file-name-inhibit-cache 10)
+      remote-file-name-inhibit-cache 10
+      ;; Never re-read remote directories during completion — Helm calls this on
+      ;; every keystroke, which is thousands of TRAMP round-trips per find-file.
+      tramp-completion-reread-directory-timeout nil)
 
 ;;; ──────────────────────────────────────────────
 ;;; SSH connection multiplexing
