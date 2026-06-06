@@ -1,8 +1,5 @@
 ;;; init-keybinds.el --- Keybindings -*- lexical-binding: t -*-
 
-;;; Project shortcuts
-(global-set-key (kbd "M-p") #'helm-projectile-find-file)
-
 ;;; Disable accidental-exit / suspend keys
 (global-unset-key (kbd "C-z"))       ; suspend-frame
 (global-unset-key (kbd "C-x C-z"))   ; suspend-frame (alternate)

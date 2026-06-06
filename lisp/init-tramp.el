@@ -59,21 +59,6 @@
   (setq recentf-keep '(file-remote-p file-readable-p)))
 
 ;;; ──────────────────────────────────────────────
-;;; Projectile: fast indexing for large remote projects
-
-(with-eval-after-load 'projectile
-  (setq projectile-enable-caching t)
-  ;; 'alien uses git ls-files — one SSH round-trip for the whole project tree
-  ;; instead of spawning a find process that walks every directory.
-  (setq projectile-indexing-method 'alien)
-  ;; Skip directories that are never source — avoids stat'ing thousands of
-  ;; generated or vendored files even before git ls-files filters them.
-  (dolist (dir '("build" "builds" "_build" "cmake-build-debug"
-                 "cmake-build-release" "cmake-build-*" ".cache"
-                 ".ccls-cache" ".clangd" "compile_commands"))
-    (add-to-list 'projectile-globally-ignored-directories dir)))
-
-;;; ──────────────────────────────────────────────
 ;;; eglot over TRAMP
 
 ;; withhold-process-id: avoids PID mismatches inside container runtimes.
