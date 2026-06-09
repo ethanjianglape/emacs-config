@@ -88,6 +88,8 @@
        ;; Belt-and-suspenders: all magit buffer names start with "magit".
        (string-prefix-p "magit" name))))
   (setq centaur-tabs-hide-tab-function #'my/centaur-tabs-hide-tab)
+  (setq centaur-tabs-hide-predicate
+        (lambda () (frame-parameter nil 'parent-frame)))
   ;; Clear the hide-tab result cache so any already-visible magit tabs
   ;; are re-evaluated immediately rather than served stale cached values.
   (when (boundp 'centaur-tabs-hide-hash)

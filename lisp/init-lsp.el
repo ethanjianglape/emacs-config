@@ -6,6 +6,7 @@
 ;;   C/C++:       clangd  (pacman -S clang)
 ;;   JS/TS/React: typescript-language-server  (npm i -g typescript-language-server typescript)
 ;;   CMake:       cmake-language-server       (yay -S cmake-language-server)
+;;   Go:          gopls  (go install golang.org/x/tools/gopls@latest)
 
 (use-package eglot
   :ensure nil
@@ -29,7 +30,9 @@
     (add-hook 'typescript-ts-mode-hook  #'eglot-ensure)
     (add-hook 'tsx-ts-mode-hook         #'eglot-ensure))
   (when (executable-find "cmake-language-server")
-    (add-hook 'cmake-ts-mode-hook #'eglot-ensure)))
+    (add-hook 'cmake-ts-mode-hook #'eglot-ensure))
+  (when (executable-find "gopls")
+    (add-hook 'go-ts-mode-hook #'eglot-ensure)))
 
 ;;; Hover docs & signature help in a floating childframe
 

@@ -10,6 +10,7 @@
 
 ;;; History & state
 (setq recentf-max-saved-items 200)
+(setq recentf-exclude '("/.emacs.d/cache/"))
 (recentf-mode 1)
 (savehist-mode 1)
 (save-place-mode 1)

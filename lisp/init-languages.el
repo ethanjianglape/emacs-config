@@ -19,7 +19,7 @@
   :ensure t
   :config
   (setq treesit-auto-install t)
-  (setq treesit-auto-langs '(c cpp cmake javascript typescript tsx yaml))
+  (setq treesit-auto-langs '(c cpp cmake go javascript typescript tsx yaml))
   ;; global-treesit-auto-mode remaps classic modes to ts-modes only when the
   ;; grammar is actually available, falling back gracefully otherwise.
   (global-treesit-auto-mode))
@@ -164,6 +164,19 @@ indentation function will be used."
   (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))
   (add-to-list 'auto-mode-alist '("\\.yml\\'"  . yaml-mode))
   (add-to-list 'auto-mode-alist '("\\.bst\\'"  . yaml-mode)))
+
+;;; Go
+
+(when (treesit-language-available-p 'go)
+  (add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode)))
+
+(add-hook 'go-ts-mode-hook
+          (lambda ()
+            (setq-local tab-width 4)
+            (setq-local go-ts-mode-indent-offset 4)))
+
+(with-eval-after-load 'apheleia
+  (setf (alist-get 'go-ts-mode apheleia-mode-alist) 'gofmt))
 
 ;;; Bazel
 ;;

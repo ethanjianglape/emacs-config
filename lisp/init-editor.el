@@ -1,5 +1,8 @@
 ;;; init-editor.el --- Editor enhancements -*- lexical-binding: t -*-
 
+;;; Indentation
+(setq-default tab-width 4)
+
 ;;; Context menu (right-click)
 (context-menu-mode 1)
 
@@ -107,6 +110,7 @@
 (use-package treesit-fold
   :ensure t
   :hook (((c-ts-mode c++-ts-mode cmake-ts-mode
+                     go-ts-mode
                      js-ts-mode typescript-ts-mode tsx-ts-mode) . treesit-fold-mode)
          (treesit-fold-mode . treesit-fold-indicators-mode))
   :bind (:map treesit-fold-mode-map
