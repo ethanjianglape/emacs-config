@@ -66,6 +66,7 @@
   (centaur-tabs-set-modified-marker t)   ; dot on unsaved buffers
   (centaur-tabs-modified-marker "●")
   (centaur-tabs-set-close-button nil)    ; no per-tab close button
+  (centaur-tabs-hide-tabs-hooks '(treemacs-mode-hook))
   :bind (("C-<prior>" . centaur-tabs-backward)   ; C-PageUp
          ("C-<next>"  . centaur-tabs-forward))    ; C-PageDown
   :config
