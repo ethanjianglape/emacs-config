@@ -60,6 +60,15 @@
 (add-hook 'c-ts-mode-hook   #'my/set-c-indent)
 (add-hook 'c++-ts-mode-hook #'my/set-c-indent)
 (add-hook 'c++-mode-hook #'my/set-c-indent)
+
+;; c-electric-colon inserts spaces before :: in namespace accessors (c++-mode)
+(add-hook 'c++-mode-hook
+          (lambda () (define-key c++-mode-map ":" #'self-insert-command)))
+
+;; clang-format mis-formats partial :: as a label when : triggers electric-indent
+(add-hook 'c++-ts-mode-hook
+          (lambda () (setq-local electric-indent-chars
+                                 (remove ?: electric-indent-chars))))
 ;; (add-hook 'c++-ts-mode-hook #'flyspell-prog-mode)
 ;; (add-hook 'c++-mode-hook #'flyspell-prog-mode)
 
