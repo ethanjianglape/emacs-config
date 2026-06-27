@@ -49,7 +49,7 @@
 (use-package projectile
   :ensure t
   :demand t
-  :bind-keymap ("C-c p" . projectile-command-map)
+  :bind-keymap ("M-p" . projectile-command-map)
   :custom
   (projectile-sort-order 'recentf)
   (projectile-auto-discover t)

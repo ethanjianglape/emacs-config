@@ -41,25 +41,51 @@
 
 ;;; C/C++ indentation
 
-(defun my/clang-format-indent-width ()
-  "Return IndentWidth from the nearest .clang-format file, or nil."
+(defun my/clang-format-setting (key)
+  "Return the value of KEY from the nearest .clang-format file, or nil."
   (when-let* ((dir (and buffer-file-name
                         (locate-dominating-file buffer-file-name ".clang-format")))
               (file (expand-file-name ".clang-format" dir)))
     (with-temp-buffer
       (insert-file-contents file)
-      (when (re-search-forward "^IndentWidth:\\s-*\\([0-9]+\\)" nil t)
-        (string-to-number (match-string 1))))))
+      (when (re-search-forward (concat "^" key ":\\s-*\\(\\S-+\\)") nil t)
+        (match-string 1)))))
 
 (defun my/set-c-indent ()
   "Use .clang-format IndentWidth if found, otherwise default to 4."
-  (let ((width (or (my/clang-format-indent-width) 4)))
+  (let ((width (or (and-let* ((w (my/clang-format-setting "IndentWidth")))
+                      (string-to-number w))
+                    4)))
     (setq-local c-basic-offset width)           ; classic c-mode
     (setq-local c-ts-mode-indent-offset width))) ; tree-sitter c/c++ mode
 
 (add-hook 'c-ts-mode-hook   #'my/set-c-indent)
 (add-hook 'c++-ts-mode-hook #'my/set-c-indent)
 (add-hook 'c++-mode-hook #'my/set-c-indent)
+
+;; clang-format's NamespaceIndentation defaults to None for nearly every
+;; base style, but c++-ts-mode's built-in "gnu" rules always indent
+;; namespace bodies. Without this, hitting RET inside a namespace indents
+;; the line only for clang-format to strip it again on save.
+(defun my/c-ts-namespace-indented-p ()
+  "Non-nil if .clang-format requests indented namespace bodies."
+  (member (my/clang-format-setting "NamespaceIndentation") '("Inner" "All")))
+
+(defun my/set-c-namespace-indent ()
+  "Match c++-ts-mode's namespace-body indent to .clang-format."
+  (unless (my/c-ts-namespace-indented-p)
+    (setq-local treesit-simple-indent-rules
+                `((cpp ((n-p-gp nil "declaration_list" "namespace_definition")
+                        parent-bol 0)
+                       ,@(alist-get 'cpp treesit-simple-indent-rules))))))
+
+(add-hook 'c++-ts-mode-hook #'my/set-c-namespace-indent)
+
+;; Classic cc-mode equivalent, in case the tree-sitter grammar is missing.
+(add-hook 'c++-mode-hook
+          (lambda ()
+            (unless (my/c-ts-namespace-indented-p)
+              (c-set-offset 'innamespace 0))))
 
 ;; c-electric-colon inserts spaces before :: in namespace accessors (c++-mode)
 (add-hook 'c++-mode-hook
@@ -120,8 +146,9 @@ affect text beyond the end of the line."
                            (skip-chars-forward " \t\r\n")
                            (point))
                          'exact 'utf-8-unix))
-             (advice `(lambda (offset length &rest _)
-                        (< (+ offset length) ,next-char))))
+             (advice `(lambda (offset length &optional text &rest _)
+                        (and (< (+ offset length) ,next-char)
+                             (not (and text (string-match-p "\n" text)))))))
         (advice-add #'clang-format--replace :before-while advice)
         (unwind-protect
             (let ((inhibit-message t))
@@ -145,9 +172,6 @@ indentation function will be used."
       (advice-add indent-line-function :before-until
                   #'clang-format--indent-line)
     (advice-remove indent-line-function #'clang-format--indent-line)))
-
-(add-hook 'c++-mode-hook #'clang-format-indent-mode)
-(add-hook 'c++-ts-mode-hook #'clang-format-indent-mode)
 
 ;;; doxygen
 
