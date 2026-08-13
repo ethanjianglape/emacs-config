@@ -173,12 +173,41 @@ indentation function will be used."
                   #'clang-format--indent-line)
     (advice-remove indent-line-function #'clang-format--indent-line)))
 
-;;; doxygen
+;;; Doxygen — tree-sitter injection for C/C++ comment highlighting
 
-(use-package highlight-doxygen
-  :ensure t
-  :config
-  (highlight-doxygen-global-mode +1))
+(defun my/c-ts-setup-doxygen ()
+  "Inject the doxygen tree-sitter parser into C/C++ comment nodes."
+  (when (treesit-language-available-p 'doxygen)
+    (let ((host (if (derived-mode-p 'c++-ts-mode) 'cpp 'c)))
+      (setq-local treesit-range-settings
+                  (treesit-range-rules
+                   :embed 'doxygen
+                   :host host
+                   :local t
+                   "(comment) @capture"))
+      (setq-local treesit-font-lock-settings
+                  (append treesit-font-lock-settings
+                          (treesit-font-lock-rules
+                           :language 'doxygen
+                           :feature 'doxygen
+                           :override t
+                           '((tag_name)        @font-lock-keyword-face
+                             (identifier)      @font-lock-variable-name-face
+                             (storageclass)    @font-lock-type-face
+                             (code_word (code) @font-lock-string-face)
+                             (emphasis (text)  @font-lock-doc-markup-face)))))
+      (setq-local treesit-font-lock-feature-list
+                  (let ((lst (copy-tree treesit-font-lock-feature-list)))
+                    (when lst (setcar lst (cons 'doxygen (car lst))))
+                    lst))
+      (treesit-font-lock-recompute-features)
+      (treesit-update-ranges)
+      (font-lock-flush))))
+
+(add-hook 'c-ts-mode-hook   #'my/c-ts-setup-doxygen t)
+(add-hook 'c++-ts-mode-hook #'my/c-ts-setup-doxygen t)
+
+;;; doxymacs — Doxygen comment insertion templates
 
 (use-package doxymacs
   :ensure t
