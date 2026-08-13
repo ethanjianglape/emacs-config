@@ -15,8 +15,11 @@
   :hook (prog-mode . rainbow-delimiters-mode))
 
 ;;; Highlight the pair surrounding the cursor
+;;
+;; Upstream recipe (MELPA) fetches from sourcehut (git.sr.ht), which is
+;; unreachable on some networks; pin to the emacsmirror GitHub mirror instead.
 (use-package highlight-parentheses
-  :ensure t
+  :ensure (:host github :repo "emacsmirror/highlight-parentheses")
   :hook (prog-mode . highlight-parentheses-mode)
   :custom
   (highlight-parentheses-highlight-adjacent t)
@@ -54,7 +57,7 @@
            (preserve-size . (nil . t))
            (window-parameters . ((no-delete-other-windows . t)))))))
 
-(add-hook 'emacs-startup-hook #'my/open-vterm-bottom)
+(add-hook 'elpaca-after-init-hook #'my/open-vterm-bottom)
 
 ;; When centaur-tabs "+" creates a new vterm, open it in the side window
 (with-eval-after-load 'centaur-tabs-functions
