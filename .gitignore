@@ -1,5 +1,6 @@
 # Compiled files
 *.elc
+*.eld
 
 # Package directories
 elpa/
