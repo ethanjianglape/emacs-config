@@ -14,7 +14,16 @@
   (eglot-autoshutdown t)
   (eglot-events-buffer-size 0)
   ;; Disable on-type formatting — it reshapes code mid-edit without being asked.
-  (eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
+  ;; Disable semantic-token highlighting — eglot repaints buffers with a much
+  ;; coarser LSP token->face mapping than tree-sitter's (e.g. namespace/
+  ;; class/enum/struct all collapse to font-lock-type-face, and modifiers
+  ;; like "override" can end up sharing a face with the function/param names
+  ;; next to them), overriding tree-sitter's finer-grained highlighting.
+  ;; Tried layering it on top of tree-sitter for C/C++ and tried it standalone
+  ;; with tree-sitter's font-lock stripped — both looked worse than plain
+  ;; tree-sitter highlighting, so it stays off everywhere.
+  (eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider
+                                        :semanticTokensProvider))
   :config
   ;; Inlay hints are distracting — disable them whenever eglot connects.
   ;; Toggle back on per-session with M-x eglot-inlay-hints-mode.

@@ -1,18 +1,5 @@
 ;;; init-languages.el --- Tree-sitter & language modes -*- lexical-binding: t -*-
 
-;;; Tree-sitter compatibility fix
-;;
-;; Emacs 30.2 built-in queries use predicate string syntax rejected by
-;; tree-sitter 0.25+.  Catch query errors per-rule so broken queries are
-;; silently skipped while all other font-lock rules still apply.
-
-(advice-add 'treesit--font-lock-fontify-region-1 :around
-            (lambda (fn &rest args)
-              (condition-case err
-                  (apply fn args)
-                (treesit-query-error
-                 (message "treesit-query-error in %s: %s" major-mode (cadr err))))))
-
 ;;; Tree-sitter grammar management
 
 (use-package treesit-auto
@@ -54,10 +41,16 @@
 (defun my/set-c-indent ()
   "Use .clang-format IndentWidth if found, otherwise default to 4."
   (let ((width (or (and-let* ((w (my/clang-format-setting "IndentWidth")))
-                      (string-to-number w))
-                    4)))
-    (setq-local c-basic-offset width)           ; classic c-mode
-    (setq-local c-ts-mode-indent-offset width))) ; tree-sitter c/c++ mode
+                     (string-to-number w))
+                   4)))
+    ;; Only touch the variable for the mode family actually active. Setting
+    ;; both unconditionally makes `c-ts-mode-indent-offset' buffer-local even
+    ;; in classic c++-mode, which breaks `c-ts-mode''s defvaralias to
+    ;; `c-ts-indent-offset' (Emacs 31) if the buffer is later upgraded to
+    ;; c++-ts-mode in place, e.g. by treesit-auto.
+    (if (derived-mode-p 'c-ts-base-mode)
+        (setq-local c-ts-indent-offset width)
+      (setq-local c-basic-offset width))))
 
 (add-hook 'c-ts-mode-hook   #'my/set-c-indent)
 (add-hook 'c++-ts-mode-hook #'my/set-c-indent)
@@ -74,10 +67,9 @@
 (defun my/set-c-namespace-indent ()
   "Match c++-ts-mode's namespace-body indent to .clang-format."
   (unless (my/c-ts-namespace-indented-p)
-    (setq-local treesit-simple-indent-rules
-                `((cpp ((n-p-gp nil "declaration_list" "namespace_definition")
-                        parent-bol 0)
-                       ,@(alist-get 'cpp treesit-simple-indent-rules))))))
+    (treesit-simple-indent-add-rules
+     'cpp
+     '(((n-p-gp nil "declaration_list" "namespace_definition") parent-bol 0)))))
 
 (add-hook 'c++-ts-mode-hook #'my/set-c-namespace-indent)
 
@@ -97,31 +89,6 @@
                                  (remove ?: electric-indent-chars))))
 ;; (add-hook 'c++-ts-mode-hook #'flyspell-prog-mode)
 ;; (add-hook 'c++-mode-hook #'flyspell-prog-mode)
-
-;;; C/C++ comment fontification fallback
-;;
-;; Emacs 30.2's built-in comment query references node types that don't exist
-;; in tree-sitter-cpp 0.25+, causing a treesit-query-error that silently drops
-;; the entire comment feature.  Add a simple (comment)-only rule as a fallback.
-
-(defun my/c-ts-fix-comment-face ()
-  "Register a simple comment font-lock rule that works with tree-sitter 0.25+."
-  (let* ((lang (if (derived-mode-p 'c++-ts-mode) 'cpp 'c))
-         (rules (treesit-font-lock-rules
-                 :language lang
-                 :feature 'comment-simple
-                 :override t
-                 "(comment) @font-lock-comment-face")))
-    ;; Add the feature at level 1 so it is always enabled.
-    (when treesit-font-lock-feature-list
-      (setcar treesit-font-lock-feature-list
-              (cons 'comment-simple (car treesit-font-lock-feature-list))))
-    (setq-local treesit-font-lock-settings
-                (append treesit-font-lock-settings rules))
-    (font-lock-flush)))
-
-(add-hook 'c-ts-mode-hook   #'my/c-ts-fix-comment-face)
-(add-hook 'c++-ts-mode-hook #'my/c-ts-fix-comment-face)
 
 (use-package clang-format
   :ensure t)
@@ -197,21 +164,20 @@ indentation function will be used."
                              (code_word (code) @font-lock-string-face)
                              (emphasis (text)  @font-lock-doc-markup-face)))))
       (setq-local treesit-font-lock-feature-list
-                  (let ((lst (copy-tree treesit-font-lock-feature-list)))
-                    (when lst (setcar lst (cons 'doxygen (car lst))))
-                    lst))
+                  (treesit-merge-font-lock-feature-list
+                   treesit-font-lock-feature-list '((doxygen))))
       (treesit-font-lock-recompute-features)
       (treesit-update-ranges)
       (font-lock-flush))))
 
-(add-hook 'c-ts-mode-hook   #'my/c-ts-setup-doxygen t)
-(add-hook 'c++-ts-mode-hook #'my/c-ts-setup-doxygen t)
+;; (add-hook 'c-ts-mode-hook   #'my/c-ts-setup-doxygen t)
+;; (add-hook 'c++-ts-mode-hook #'my/c-ts-setup-doxygen t)
 
 ;;; doxymacs — Doxygen comment insertion templates
 
-(use-package doxymacs
-  :ensure t
-  :hook (c++-ts-mode-hook . doxymacs-mode))
+;; (use-package doxymacs
+;; :ensure t
+;; :hook (c++-ts-mode-hook . doxymacs-mode))
 
 ;;; YAML (.yaml, .yml, .bst BuildStream elements)
 

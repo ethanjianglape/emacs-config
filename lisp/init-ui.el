@@ -108,17 +108,6 @@
 ;;; Highlight current line
 (global-hl-line-mode 1)
 
-;;; Indentation guides
-(use-package indent-bars
-  :ensure t
-  :hook (prog-mode . indent-bars-mode)
-  :custom
-  ;; treesit-support causes arith-errors on C++ node types; plain
-  ;; whitespace-based bar placement works correctly without it.
-  (indent-bars-treesit-support nil)
-  ;; Don't draw a bar inside string literals.
-  (indent-bars-no-descend-string t))
-
 ;;; Modeline
 (use-package nerd-icons
   :ensure t)
